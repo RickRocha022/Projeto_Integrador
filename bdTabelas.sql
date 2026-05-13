@@ -23,7 +23,7 @@ CREATE TABLE categorias (
 -- criando a tabela 'solicitacoes'
 CREATE TABLE chamados (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
+    usuario_id INT,                -- NULL quando o usuário for excluído
     categoria_id INT NOT NULL,
     descricao VARCHAR(255) NOT NULL,
 
@@ -54,7 +54,7 @@ CREATE TABLE chamados (
     -- data automatica
     data_abertura DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
