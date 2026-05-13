@@ -19,16 +19,17 @@ except mysql.connector.Error as erro:
 # ─── UTILITÁRIOS ───────────────────────────────────────────
 
 def ler_texto(prompt):
-    valor = input(prompt).strip()
-    if not valor:
-        print("Campo obrigatório! Não pode ficar em branco.")
-        return None
+    while True:
+        valor = input(prompt).strip()
+        if not valor:
+            print("Campo obrigatório! Não pode ficar em branco.")
+            continue
 
-    if not valor.replace(" ", "").isalpha():
-        print("Este campo aceita apenas letras.")
-        return None
+        if not valor.replace(" ", "").isalpha():
+            print("Este campo aceita apenas letras.")
+            continue
 
-    return valor
+        return valor
 
 """
 *strip() --> remove espaços em branco no começo e no final.
@@ -39,16 +40,17 @@ Se houver número, símbolo ou caractere especial, retorna False.
 """
 
 def ler_email(prompt):
-    valor = input(prompt).strip()
-    if not valor:
-        print("Campo obrigatório! Não pode ficar em branco.")
-        return None
+    while True:
+        valor = input(prompt).strip()
+        if not valor:
+            print("Campo obrigatório! Não pode ficar em branco.")
+            continue
 
-    if "@" not in valor:
-        print("E-mail inválido!.")
-        return None
+        if "@" not in valor:
+            print("E-mail inválido!.")
+            continue
 
-    return valor
+        return valor
 
 """
 *"@" not in valor --> verifica se o caractere @ está presente na string.
@@ -59,20 +61,22 @@ Se não estiver, o e-mail é considerado inválido.
 
 def ler_inteiro(prompt, minimo=None, maximo=None):
     """Lê um número inteiro com intervalo opcional."""
-    try:
-        valor = int(input(prompt).strip())
-        if minimo is not None and valor < minimo:
-            print(f"Valor mínimo: {minimo}")
-            return None
+    while True:
+        try:
+            valor = int(input(prompt).strip())
+            if minimo is not None and valor < minimo:
+                print(f"Valor mínimo: {minimo}")
+                continue
 
-        if maximo is not None and valor > maximo:
-            print(f"Valor máximo: {maximo}")
-            return None
-        return valor
+            if maximo is not None and valor > maximo:
+                print(f"Valor máximo: {maximo}")
+                continue
 
-    except ValueError:
-        print("Digite apenas números inteiros.")
-        return None
+            return valor
+
+        except ValueError:
+            print("Digite apenas números inteiros.")
+            continue
 
 """
 *(prompt, minimo=None, maximo=None) --> lê um número inteiro e
@@ -86,18 +90,15 @@ Se conseguir, verifica se está dentro dos limites.
 def cadastrar_usuario():
     try:
         nome = ler_texto("\nNome: ")
-        if nome is None:
-            return
 
         email = ler_email("Email: ")
-        if email is None:
-            return
 
-        telefone = input("Telefone: ").strip()
-        if telefone:
-            if not telefone.isdigit():
+        while True:
+            telefone = input("Telefone: ").strip()
+            if telefone and not telefone.isdigit():
                 print("Telefone deve conter apenas números!")
-                return
+                continue
+            break
 
         cursor.execute("""
             INSERT INTO usuarios (nome, email, telefone)
@@ -202,16 +203,14 @@ def excluir_usuario():
             print(f"  Email : {u[2]}")
             print("─" * 40)
 
-        usuario_id = ler_inteiro("\nDigite o ID do usuário a excluir: ", minimo=1)
-        if usuario_id is None:
-            return
-
-        cursor.execute("SELECT nome FROM usuarios WHERE id = %s", (usuario_id,))
-        usuario = cursor.fetchone()
-
-        if not usuario:
-            print("Usuário não encontrado.")
-            return
+        while True:
+            usuario_id = ler_inteiro("\nDigite o ID do usuário a excluir: ", minimo=1)
+            cursor.execute("SELECT nome FROM usuarios WHERE id = %s", (usuario_id,))
+            usuario = cursor.fetchone()
+            if not usuario:
+                print("Usuário não encontrado. Tente novamente.")
+                continue
+            break
 
         # Verifica se o usuário possui chamados vinculados
         cursor.execute("SELECT COUNT(*) FROM chamados WHERE usuario_id = %s", (usuario_id,))
@@ -223,9 +222,15 @@ def excluir_usuario():
             print(f"\nAtenção: este usuário possui {total_chamados} chamado(s) vinculado(s).")
             print("Os chamados serão mantidos, mas ficarão sem usuário associado.")
 
-        confirmacao = input("\nTem certeza que deseja excluir? (s/n): ").strip().lower()
+        while True:
+            confirmacao = input("\nTem certeza que deseja excluir? (s/n): ").strip().lower()
+            if confirmacao not in ("s", "n"):
+                print("Digite apenas 's' para confirmar ou 'n' para cancelar.")
+                continue
+            break
+
         if confirmacao != "s":
-            print("Exclusão cancelada. Digite apenas valores válidos!")
+            print("Exclusão cancelada.")
             return
 
         cursor.execute("DELETE FROM usuarios WHERE id = %s", (usuario_id,))
@@ -263,9 +268,13 @@ def abrir_chamado():
         for u in usuarios:
             print(f"  {u[0]} - {u[1]}")
 
-        usuario_id = ler_inteiro("Informe o ID do usuário: ", minimo=1)
-        if usuario_id is None:
-            return
+        ids_usuarios = {str(u[0]) for u in usuarios}
+        while True:
+            usuario_id = ler_inteiro("Informe o ID do usuário: ", minimo=1)
+            if str(usuario_id) not in ids_usuarios:
+                print("ID não encontrado. Tente novamente.")
+                continue
+            break
 
         cursor.execute("SELECT id, nome FROM categorias")
         categorias = cursor.fetchall()
@@ -274,23 +283,21 @@ def abrir_chamado():
         for c in categorias:
             print(f"  {c[0]} - {c[1]}")
 
-        categoria_id = ler_inteiro("Informe o ID da categoria: ", minimo=1)
-        if categoria_id is None:
-            return
+        ids_categorias = {str(c[0]) for c in categorias}
+        while True:
+            categoria_id = ler_inteiro("Informe o ID da categoria: ", minimo=1)
+            if str(categoria_id) not in ids_categorias:
+                print("ID não encontrado. Tente novamente.")
+                continue
+            break
 
         descricao = ler_texto("Descrição do problema: ")
-        if descricao is None:
-            return
 
         print("\nUrgência (1 = baixa  →  5 = crítica)")
         urgencia = ler_inteiro("Urgência [1-5]: ", minimo=1, maximo=5)
-        if urgencia is None:
-            return
 
         print("Impacto  (1 = baixo  →  5 = alto)")
         impacto = ler_inteiro("Impacto  [1-5]: ", minimo=1, maximo=5)
-        if impacto is None:
-            return
 
         cursor.execute("""
             INSERT INTO chamados (usuario_id, categoria_id, descricao, urgencia, impacto)
@@ -369,11 +376,12 @@ def buscar_por_prioridade():
         print("  3 - Alta")
         print("  4 - Crítica")
 
-        opcao = input("Escolha: ").strip()
-
-        if opcao not in niveis:
-            print("Opção inválida!")
-            return
+        while True:
+            opcao = input("Escolha: ").strip()
+            if opcao not in niveis:
+                print("Opção inválida! Digite 1, 2, 3 ou 4.")
+                continue
+            break
 
         nivel_escolhido = niveis[opcao]
 
@@ -422,11 +430,12 @@ def buscar_por_status():
         print("  2 - Em andamento")
         print("  3 - Resolvido")
 
-        opcao = input("Escolha: ").strip()
-
-        if opcao not in status_map:
-            print("Opção inválida!")
-            return
+        while True:
+            opcao = input("Escolha: ").strip()
+            if opcao not in status_map:
+                print("Opção inválida! Digite 1, 2 ou 3.")
+                continue
+            break
 
         status_escolhido = status_map[opcao]
 
@@ -489,26 +498,31 @@ def atualizar_status():
         for c in chamados:
             print(f"  ID: {c[0]}  |  Status atual: {c[1]}")
 
-        chamado_id = ler_inteiro("\nDigite o ID do chamado: ", minimo=1)
-        if chamado_id is None:
-            return
+        ids_chamados = {str(c[0]) for c in chamados}
+        while True:
+            chamado_id = ler_inteiro("\nDigite o ID do chamado: ", minimo=1)
+            if str(chamado_id) not in ids_chamados:
+                print("ID não encontrado. Tente novamente.")
+                continue
+            break
 
         print("\nNovo status:")
-        print("  1 - Aberto")
+        print("  1 - Aberta")
         print("  2 - Em andamento")
         print("  3 - Resolvido")
 
-        opcao = input("Escolha: ").strip()
-
         status_map = {
-            "1": "Aberto",
+            "1": "Aberta",
             "2": "Em andamento",
             "3": "Resolvido",
         }
 
-        if opcao not in status_map:
-            print("Opção inválida!")
-            return
+        while True:
+            opcao = input("Escolha: ").strip()
+            if opcao not in status_map:
+                print("Opção inválida! Digite 1, 2 ou 3.")
+                continue
+            break
 
         novo_status = status_map[opcao]
 
@@ -556,19 +570,26 @@ def excluir_chamado():
             print(f"  Status    : {c[3]}")
             print("─" * 40)
 
-        chamado_id = ler_inteiro("\nDigite o ID do chamado a excluir: ", minimo=1)
-        if chamado_id is None:
-            return
+        ids_chamados = {str(c[0]) for c in chamados}
+        while True:
+            chamado_id = ler_inteiro("\nDigite o ID do chamado a excluir: ", minimo=1)
+            if str(chamado_id) not in ids_chamados:
+                print("ID não encontrado. Tente novamente.")
+                continue
+            break
 
         cursor.execute("SELECT descricao FROM chamados WHERE id = %s", (chamado_id,))
         chamado = cursor.fetchone()
 
-        if not chamado:
-            print("Chamado não encontrado.")
-            return
-
         print(f"\nChamado selecionado: {chamado[0]}")
-        confirmacao = input("Tem certeza que deseja excluir? (s/n): ").strip().lower()
+
+        while True:
+            confirmacao = input("Tem certeza que deseja excluir? (s/n): ").strip().lower()
+            if confirmacao not in ("s", "n"):
+                print("Digite apenas 's' para confirmar ou 'n' para cancelar.")
+                continue
+            break
+
         if confirmacao != "s":
             print("Exclusão cancelada.")
             return
