@@ -20,7 +20,7 @@ CREATE TABLE categorias (
     nome VARCHAR(100) NOT NULL
 );
 
--- criando a tabela 'solicitacoes'
+-- criando a tabela 'chamados'
 CREATE TABLE chamados (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT,                -- NULL quando o usuário for excluído

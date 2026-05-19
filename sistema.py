@@ -18,15 +18,36 @@ except mysql.connector.Error as erro:
 
 # ─── UTILITÁRIOS ───────────────────────────────────────────
 
+def perguntar_retry():
+    """Pergunta se quer tentar novamente. Retorna True para sim, False para não."""
+    while True:
+        opcao = input("  Tentar novamente? (s/n): ").strip().lower()
+        if opcao == "s":
+            return True
+        if opcao == "n":
+            return False
+        print("  Digite apenas 's' ou 'n'.")
+
+"""
+*Retorna True se o usuário quiser tentar de novo.
+*Retorna False se quiser voltar ao menu.
+*O while interno garante que só aceita 's' ou 'n'.
+"""
+
+
 def ler_texto(prompt):
     while True:
         valor = input(prompt).strip()
         if not valor:
             print("Campo obrigatório! Não pode ficar em branco.")
+            if not perguntar_retry():
+                return None
             continue
 
         if not valor.replace(" ", "").isalpha():
             print("Este campo aceita apenas letras.")
+            if not perguntar_retry():
+                return None
             continue
 
         return valor
@@ -39,15 +60,20 @@ nomes com espaço (ex: "João Silva") não sejam rejeitados.
 Se houver número, símbolo ou caractere especial, retorna False.
 """
 
+
 def ler_email(prompt):
     while True:
         valor = input(prompt).strip()
         if not valor:
             print("Campo obrigatório! Não pode ficar em branco.")
+            if not perguntar_retry():
+                return None
             continue
 
         if "@" not in valor:
             print("E-mail inválido!.")
+            if not perguntar_retry():
+                return None
             continue
 
         return valor
@@ -59,6 +85,7 @@ Se não estiver, o e-mail é considerado inválido.
 (@, ., -) que seriam barrados pela validação isalpha().
 """
 
+
 def ler_inteiro(prompt, minimo=None, maximo=None):
     """Lê um número inteiro com intervalo opcional."""
     while True:
@@ -66,16 +93,22 @@ def ler_inteiro(prompt, minimo=None, maximo=None):
             valor = int(input(prompt).strip())
             if minimo is not None and valor < minimo:
                 print(f"Valor mínimo: {minimo}")
+                if not perguntar_retry():
+                    return None
                 continue
 
             if maximo is not None and valor > maximo:
                 print(f"Valor máximo: {maximo}")
+                if not perguntar_retry():
+                    return None
                 continue
 
             return valor
 
         except ValueError:
             print("Digite apenas números inteiros.")
+            if not perguntar_retry():
+                return None
             continue
 
 """
@@ -97,6 +130,9 @@ def cadastrar_usuario():
             telefone = input("Telefone: ").strip()
             if telefone and not telefone.isdigit():
                 print("Telefone deve conter apenas números!")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -208,7 +244,10 @@ def excluir_usuario():
             cursor.execute("SELECT nome FROM usuarios WHERE id = %s", (usuario_id,))
             usuario = cursor.fetchone()
             if not usuario:
-                print("Usuário não encontrado. Tente novamente.")
+                print("Usuário não encontrado.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -272,7 +311,10 @@ def abrir_chamado():
         while True:
             usuario_id = ler_inteiro("Informe o ID do usuário: ", minimo=1)
             if str(usuario_id) not in ids_usuarios:
-                print("ID não encontrado. Tente novamente.")
+                print("ID não encontrado.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -287,7 +329,10 @@ def abrir_chamado():
         while True:
             categoria_id = ler_inteiro("Informe o ID da categoria: ", minimo=1)
             if str(categoria_id) not in ids_categorias:
-                print("ID não encontrado. Tente novamente.")
+                print("ID não encontrado.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -380,6 +425,9 @@ def buscar_por_prioridade():
             opcao = input("Escolha: ").strip()
             if opcao not in niveis:
                 print("Opção inválida! Digite 1, 2, 3 ou 4.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -434,6 +482,9 @@ def buscar_por_status():
             opcao = input("Escolha: ").strip()
             if opcao not in status_map:
                 print("Opção inválida! Digite 1, 2 ou 3.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -502,7 +553,10 @@ def atualizar_status():
         while True:
             chamado_id = ler_inteiro("\nDigite o ID do chamado: ", minimo=1)
             if str(chamado_id) not in ids_chamados:
-                print("ID não encontrado. Tente novamente.")
+                print("ID não encontrado.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -521,6 +575,9 @@ def atualizar_status():
             opcao = input("Escolha: ").strip()
             if opcao not in status_map:
                 print("Opção inválida! Digite 1, 2 ou 3.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
@@ -574,7 +631,10 @@ def excluir_chamado():
         while True:
             chamado_id = ler_inteiro("\nDigite o ID do chamado a excluir: ", minimo=1)
             if str(chamado_id) not in ids_chamados:
-                print("ID não encontrado. Tente novamente.")
+                print("ID não encontrado.")
+                if not perguntar_retry():
+
+                    return
                 continue
             break
 
