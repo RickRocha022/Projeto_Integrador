@@ -664,6 +664,8 @@ def excluir_chamado():
 """
 *JOIN com usuarios --> exibe o nome do usuário dono do chamado na listagem,
 facilitando a identificação antes da exclusão.
+*COALESCE --> se o usuário foi excluído, mostra "Usuário excluído" em vez de NULL. Serve para manter a clareza na listagem mesmo
+quando o usuário associado não existe mais.
 *fetchone() --> confirma se o ID informado realmente existe antes de deletar.
 *confirmacao != "s" --> exige confirmação explícita antes de deletar,
 evitando exclusões acidentais.
@@ -724,6 +726,8 @@ seguido do número de chamados, criando uma exibição organizada.
 """
 
 # ─── MENU ──────────────────────────────────────────────────
+
+#FEITO COM IA O DESIGN DO MENU PARA FICAR MAIS BONITO E ORGANIZADO, COM SEÇÕES SEPARADAS POR LINHAS E TÍTULOS CENTRALIZADOS.
 
 def menu_principal():
     largura = 38  # largura interna do menu (entre as bordas)
