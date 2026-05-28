@@ -211,8 +211,4 @@ Projeto desenvolvido com foco em aprendizado de:
 - Estruturas de software
 - Boas práticas de validação
 
----
 
-# 👨‍💻 Autor
-
-Desenvolvido por **Leonardo Santos** 🚀
