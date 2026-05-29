@@ -205,11 +205,11 @@ A TAG apontará para a versão estável contendo:
 
 # 👨‍💻 Integrantes da Equipe
 
-- Leonardo Santos
-- William da Silva Rocha - 26006208
 - Gabriel Henrique - 26000755
+- Leonardo Santos - 26006146
 - Lorenzo Dias Lanzoni - 26005161
 - Pedro Beirigo - 26010891
+- William da Silva Rocha - 26006208
 
 ---
 
