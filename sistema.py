@@ -2,6 +2,20 @@ import mysql.connector
 
 # ─── CONEXÃO ───────────────────────────────────────────────
 
+"""try:
+    conexao = mysql.connector.connect(
+        host="BD-ACD",       # ou IP do servidor
+        user="BD24022618",            # seu usuário
+        password="Aaqfz5",   # sua senha
+        database="BD24022618"   # nome do banco de dados
+    )
+    print("Conexão realizada com sucesso!")
+    cursor = conexao.cursor()
+
+except mysql.connector.Error as erro:
+    print(f"Erro ao conectar: {erro}")
+    exit()"""
+
 try:
     conexao = mysql.connector.connect(
         host="127.0.0.1",       # ou IP do servidor
@@ -123,8 +137,12 @@ Se conseguir, verifica se está dentro dos limites.
 def cadastrar_usuario():
     try:
         nome = ler_texto("\nNome: ")
+        if nome is None:
+            return
 
         email = ler_email("Email: ")
+        if email is None:
+            return
 
         while True:
             telefone = input("Telefone: ").strip()
@@ -241,6 +259,8 @@ def excluir_usuario():
 
         while True:
             usuario_id = ler_inteiro("\nDigite o ID do usuário a excluir: ", minimo=1)
+            if usuario_id is None:
+                return
             cursor.execute("SELECT nome FROM usuarios WHERE id = %s", (usuario_id,))
             usuario = cursor.fetchone()
             if not usuario:
@@ -310,6 +330,8 @@ def abrir_chamado():
         ids_usuarios = {str(u[0]) for u in usuarios}
         while True:
             usuario_id = ler_inteiro("Informe o ID do usuário: ", minimo=1)
+            if usuario_id is None:
+                return
             if str(usuario_id) not in ids_usuarios:
                 print("ID não encontrado.")
                 if not perguntar_retry():
@@ -328,6 +350,8 @@ def abrir_chamado():
         ids_categorias = {str(c[0]) for c in categorias}
         while True:
             categoria_id = ler_inteiro("Informe o ID da categoria: ", minimo=1)
+            if categoria_id is None:
+                return
             if str(categoria_id) not in ids_categorias:
                 print("ID não encontrado.")
                 if not perguntar_retry():
@@ -337,12 +361,18 @@ def abrir_chamado():
             break
 
         descricao = ler_texto("Descrição do problema: ")
+        if descricao is None:
+            return
 
         print("\nUrgência (1 = baixa  →  5 = crítica)")
         urgencia = ler_inteiro("Urgência [1-5]: ", minimo=1, maximo=5)
+        if urgencia is None:
+            return
 
         print("Impacto  (1 = baixo  →  5 = alto)")
         impacto = ler_inteiro("Impacto  [1-5]: ", minimo=1, maximo=5)
+        if impacto is None:
+            return
 
         cursor.execute("""
             INSERT INTO chamados (usuario_id, categoria_id, descricao, urgencia, impacto)
@@ -471,12 +501,12 @@ def buscar_por_prioridade():
 
 def buscar_por_status():
     try:
-        status_map = {"1": "Aberto", "2": "Em andamento", "3": "Resolvido"}
+        status_map = {"1": "Aberta", "2": "Em andamento", "3": "Fechada"}
 
         print("\nFiltrar por status:")
-        print("  1 - Aberto")
+        print("  1 - Aberta")
         print("  2 - Em andamento")
-        print("  3 - Resolvido")
+        print("  3 - Fechada")
 
         while True:
             opcao = input("Escolha: ").strip()
@@ -552,6 +582,8 @@ def atualizar_status():
         ids_chamados = {str(c[0]) for c in chamados}
         while True:
             chamado_id = ler_inteiro("\nDigite o ID do chamado: ", minimo=1)
+            if chamado_id is None:
+                return
             if str(chamado_id) not in ids_chamados:
                 print("ID não encontrado.")
                 if not perguntar_retry():
@@ -630,6 +662,8 @@ def excluir_chamado():
         ids_chamados = {str(c[0]) for c in chamados}
         while True:
             chamado_id = ler_inteiro("\nDigite o ID do chamado a excluir: ", minimo=1)
+            if chamado_id is None:
+                return
             if str(chamado_id) not in ids_chamados:
                 print("ID não encontrado.")
                 if not perguntar_retry():
@@ -698,9 +732,9 @@ def estatisticas():
         """)
         top_categoria = cursor.fetchone()
 
-        print("\n" + "═" * 40)
+        print("\n" + "═" * 70)
         print("         ESTATÍSTICAS DO SISTEMA")
-        print("═" * 40)
+        print("═" * 70)
         print(f"  Usuários cadastrados : {total_usuarios}")
         print(f"  Total de chamados    : {total_chamados}")
 
@@ -715,7 +749,7 @@ def estatisticas():
         if top_categoria:
             print(f"\n  Categoria mais acionada: {top_categoria[0]} ({top_categoria[1]} chamado(s))")
 
-        print("═" * 40)
+        print("═" * 70)
 
     except Exception as e:
         print(f"Erro ao carregar estatísticas: {e}")
