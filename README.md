@@ -4,9 +4,9 @@
 
 Este projeto consiste em um sistema de gerenciamento de chamados desenvolvido em Python com integração ao banco de dados MySQL.
 
-O objetivo do sistema é simular um ambiente interno de suporte técnico de T.I., permitindo o cadastro de usuários, abertura de chamados, controle de status, consultas e geração de estatísticas.
+O objetivo do sistema é simular um ambiente interno de suporte técnico de T.I., permitindo o cadastro de usuários, abertura de chamados, consultas, atualização de status e geração de estatísticas.
 
-O sistema funciona via terminal e utiliza integração real com banco de dados relacional.
+O sistema funciona por meio de um menu interativo em terminal e utiliza integração real com banco de dados relacional.
 
 ---
 
@@ -14,22 +14,23 @@ O sistema funciona via terminal e utiliza integração real com banco de dados r
 
 Desenvolver uma aplicação CRUD completa utilizando:
 
-- Python
-- MySQL
-- Integração com banco de dados
-- Estruturas condicionais e de repetição
-- Tratamento de exceções
-- Validação de dados
-- Versionamento com Git e GitHub
+* Python
+* MySQL
+* Integração com banco de dados
+* Estruturas condicionais e de repetição
+* Tratamento de exceções
+* Validação de dados
+* Versionamento com Git e GitHub
 
 ---
 
 # 🛠 Tecnologias Utilizadas
 
-- Python 3
-- MySQL Server
-- mysql-connector-python
-- Git/GitHub
+* Python 3
+* MySQL Server
+* mysql-connector-python
+* Git
+* GitHub
 
 ---
 
@@ -38,10 +39,9 @@ Desenvolver uma aplicação CRUD completa utilizando:
 ```bash
 Projeto/
 │
-├── main.py
-├── banco.sql
-├── README.md
-└── assets/
+├── sistema.py
+├── bdTabelas.sql
+└── README.md
 ```
 
 ---
@@ -49,43 +49,68 @@ Projeto/
 # ⚙️ Funcionalidades
 
 ## 👤 Usuários
-- Cadastro de usuários
-- Listagem de usuários
-- Busca por ID, nome e e-mail
-- Exclusão de usuários
+
+* Cadastro de usuários
+* Listagem de usuários cadastrados
+* Busca de usuários por ID
+* Busca de usuários por nome
+* Busca de usuários por e-mail
+* Exclusão de usuários
 
 ## 🎫 Chamados
-- Abertura de chamados
-- Listagem de chamados
-- Busca por prioridade
-- Busca por status
-- Atualização de status
-- Exclusão de chamados
+
+* Abertura de chamados
+* Associação de chamados a usuários
+* Associação de chamados a categorias
+* Registro da descrição do problema
+* Definição de urgência (1 a 5)
+* Definição de impacto (1 a 5)
+* Cálculo automático da prioridade
+* Classificação automática do nível de prioridade
+* Listagem de chamados
+* Busca de chamados por prioridade
+* Busca de chamados por status
+* Atualização de status
+* Exclusão de chamados
 
 ## 📊 Estatísticas
-- Quantidade de usuários
-- Quantidade de chamados
-- Chamados por status
-- Chamados por prioridade
-- Categoria mais acionada
+
+* Quantidade total de usuários cadastrados
+* Quantidade total de chamados registrados
+* Quantidade de chamados por status
+* Quantidade de chamados por prioridade
+* Categoria mais acionada
 
 ---
 
-# 🧠 Regras de Prioridade
+# 🧠 Regra de Prioridade
 
-A prioridade dos chamados é definida através dos níveis de:
+A prioridade dos chamados é calculada automaticamente pelo banco de dados utilizando os níveis de urgência e impacto informados durante a abertura do chamado.
 
-- Urgência
-- Impacto
+Escala utilizada:
 
-Os valores variam de:
+| Valor | Nível    |
+| ----- | -------- |
+| 1     | Baixo    |
+| 2     | Moderado |
+| 3     | Médio    |
+| 4     | Alto     |
+| 5     | Crítico  |
 
-| Valor | Nível |
-|---|---|
-| 1 | Baixo |
-| 5 | Crítico |
+Fórmula utilizada:
 
-O sistema utiliza essas informações para organizar os chamados automaticamente por prioridade.
+Prioridade = (Urgência × 0,6) + (Impacto × 0,4)
+
+A urgência possui peso de 60% no cálculo por representar a necessidade imediata de atendimento. O impacto possui peso de 40%, representando o alcance do problema.
+
+Classificação automática da prioridade:
+
+* Crítica: prioridade ≥ 4,2
+* Alta: prioridade ≥ 3,2
+* Média: prioridade ≥ 2,2
+* Baixa: prioridade < 2,2
+
+Os chamados são exibidos ordenados da maior para a menor prioridade.
 
 ---
 
@@ -93,27 +118,68 @@ O sistema utiliza essas informações para organizar os chamados automaticamente
 
 O sistema utiliza três tabelas principais:
 
-- usuarios
-- categorias
-- chamados
+## usuarios
 
-## Relacionamentos
+Armazena os dados dos usuários que registram chamados.
 
-- Um usuário pode possuir vários chamados
-- Cada chamado pertence a uma categoria
-- Ao excluir um usuário:
-  - Os chamados permanecem registrados
-  - O usuário associado torna-se NULL
+Campos principais:
+
+* id
+* nome
+* email
+* telefone
+
+## categorias
+
+Armazena as categorias disponíveis para classificação dos chamados.
+
+Campos principais:
+
+* id
+* nome
+
+Categorias cadastradas inicialmente:
+
+* Sistema com falha
+* Acesso bloqueado
+* Impressora com erro
+* Internet sem conexão
+
+## chamados
+
+Armazena os chamados registrados no sistema.
+
+Campos principais:
+
+* id
+* usuario_id
+* categoria_id
+* descricao
+* urgencia
+* impacto
+* prioridade
+* nivel_prioridade
+* status
+* data_abertura
+
+### Relacionamentos
+
+* Um usuário pode possuir vários chamados.
+* Uma categoria pode estar associada a vários chamados.
+* Cada chamado pertence a um usuário e a uma categoria.
+* Ao excluir um usuário, os chamados permanecem registrados e o campo usuario_id é definido como NULL (ON DELETE SET NULL), preservando o histórico das solicitações.
 
 ---
 
 # ✅ Validações Implementadas
 
-- Campos obrigatórios
-- Validação de e-mail
-- Apenas números para telefone
-- Controle de valores mínimos e máximos
-- Tratamento de entradas inválidas
+* Campos obrigatórios
+* Validação de e-mail
+* Telefone contendo apenas números
+* Controle de valores mínimos e máximos
+* Validação de IDs informados pelo usuário
+* Tratamento de entradas inválidas
+* Tratamento de exceções
 
 ---
 
@@ -125,21 +191,17 @@ O sistema utiliza três tabelas principais:
 pip install mysql-connector-python
 ```
 
----
+## 2️⃣ Criar o banco de dados
 
-## 2️⃣ Configurar o banco de dados
-
-Criar o banco MySQL e executar o script SQL:
+Criar um banco de dados MySQL e executar o script SQL:
 
 ```sql
 SOURCE banco.sql;
 ```
 
----
+## 3️⃣ Configurar a conexão
 
-## 3️⃣ Configurar conexão
-
-No arquivo principal:
+No arquivo main.py:
 
 ```python
 conexao = mysql.connector.connect(
@@ -149,8 +211,6 @@ conexao = mysql.connector.connect(
     database="SEU_BANCO"
 )
 ```
-
----
 
 ## 4️⃣ Executar o sistema
 
@@ -162,12 +222,12 @@ python main.py
 
 # 📌 Organização no GitHub
 
-O projeto segue os requisitos de versionamento utilizando:
+O projeto utiliza:
 
-- Branch principal: `main`
-- Histórico de commits individuais
-- GitHub Projects para organização das tarefas
-- TAG final de entrega (`v1.0`)
+* Branch principal: main
+* Histórico de commits da equipe
+* GitHub Projects para gerenciamento das tarefas
+* TAG final de entrega
 
 ---
 
@@ -175,81 +235,75 @@ O projeto segue os requisitos de versionamento utilizando:
 
 O quadro do GitHub Projects foi organizado utilizando as colunas:
 
-- Backlog
-- Em andamento
-- Em revisão
-- Concluído
+* Backlog
+* Em andamento
+* Em revisão
+* Concluído
 
-Cada funcionalidade do sistema foi separada em tarefas individuais contendo:
-- Responsável
-- Status
-- Progresso da implementação
+As funcionalidades foram divididas em tarefas contendo:
+
+* Responsável
+* Status
+* Progresso da implementação
 
 ---
 
 # 🏷 Versionamento
 
-A entrega final do projeto será marcada utilizando uma TAG:
+A entrega final do projeto será identificada pela TAG:
 
 ```bash
 v1.0
 ```
 
-A TAG apontará para a versão estável contendo:
-- Código-fonte
-- README completo
-- Script SQL
-- Documentação mínima exigida
+A TAG aponta para a versão estável contendo:
 
----
-
-# 👨‍💻 Integrantes da Equipe
-
-- Gabriel Henrique - 26000755
-- Leonardo Santos - 26006146
-- Lorenzo Dias Lanzoni - 26005161
-- Pedro Beirigo - 26010891
-- William da Silva Rocha - 26006208
-
----
-
-# 📚 Conceitos Aplicados
-
-- CRUD
-- SQL
-- JOIN
-- Relacionamentos
-- Estruturas de repetição
-- Estruturas condicionais
-- Tratamento de exceções
-- Modularização
-- Integração Python + MySQL
-
----
-
-# ✅ Status do Projeto
-
-✔ Funcional  
-✔ Integrado ao MySQL  
-✔ CRUD completo  
-✔ Estatísticas implementadas  
-✔ Menu interativo  
-✔ Validações implementadas  
+* Código-fonte
+* Script SQL
+* README
+* Documentação exigida
 
 ---
 
 # 🖥 Demonstração do Fluxo Principal
 
-O sistema permite executar o seguinte fluxo:
+Fluxo principal do sistema:
 
 1. Cadastro de usuário
 2. Abertura de chamado
 3. Consulta de chamados
-4. Atualização de status
-5. Visualização de estatísticas
+4. Busca por prioridade ou status
+5. Atualização de status
+6. Visualização de estatísticas
+
+---
+
+# 📚 Conceitos Aplicados
+
+* CRUD
+* SQL
+* JOIN
+* Relacionamentos
+* Estruturas condicionais
+* Estruturas de repetição
+* Tratamento de exceções
+* Modularização
+* Integração Python + MySQL
+
+---
+
+# 👨‍💻 Integrantes da Equipe
+
+* Gabriel Henrique - 26000755
+* Leonardo Santos - 26006146
+* Lorenzo Dias Lanzoni - 26005161
+* Pedro Beirigo - 26010891
+* William da Silva Rocha - 26006208
 
 ---
 
 # 📖 Considerações Finais
 
-O projeto foi desenvolvido com foco acadêmico para prática de desenvolvimento backend, integração com banco de dados relacionais e utilização de boas práticas de organização e versionamento utilizando GitHub.
+O projeto foi desenvolvido com foco acadêmico para aplicação prática de conceitos de programação, banco de dados relacionais e desenvolvimento de sistemas utilizando Python e MySQL.
+
+A solução implementa operações CRUD completas, consultas, controle de status, estatísticas e cálculo automático de prioridade, atendendo aos requisitos propostos para o trabalho.
