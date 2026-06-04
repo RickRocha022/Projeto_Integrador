@@ -58,8 +58,27 @@ CREATE TABLE chamados (
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
+
 INSERT INTO categorias (nome) VALUES
 ('Sistema com falha'),
 ('Acesso bloqueado'),
 ('Impressora com erro'),
 ('Internet sem conexão');
+
+-- ─── DADOS PARA AVALIAÇÃO ────────────────────────────────────────
+
+INSERT INTO usuarios (nome, email, telefone) VALUES
+('Gabriel',  'gabriel@email.com',  '19991110001'),
+('William',  'william@email.com',  '19991110002'),
+('Leonardo', 'leonardo@email.com', '19991110003'),
+('Lorenzo',  'lorenzo@email.com',  '19991110004'),
+('Pedro',    'pedro@email.com',    '19991110005');
+
+INSERT INTO chamados (usuario_id, categoria_id, descricao, urgencia, impacto) VALUES
+(1, 1, 'Sistema de gestão travando ao abrir relatórios.', 5, 4),  
+(2, 2, 'Usuário sem acesso ao painel administrativo.', 4, 4),  
+(3, 4, 'Sem conexão com a internet na sala de reuniões.', 3, 3),  
+(4, 3, 'Impressora do setor financeiro não imprime.', 2, 3),  
+(5, 1, 'Erro ao fazer login no sistema após atualização.', 1, 2);  
+
+-- Apenas criar um banco de dados, alterar no pyhton com seus dados e rodar o código!!

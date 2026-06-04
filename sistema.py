@@ -2,26 +2,12 @@ import mysql.connector
 
 # ─── CONEXÃO ───────────────────────────────────────────────
 
-"""try:
-    conexao = mysql.connector.connect(
-        host="BD-ACD",       # ou IP do servidor
-        user="BD24022618",            # seu usuário
-        password="Aaqfz5",   # sua senha
-        database="BD24022618"   # nome do banco de dados
-    )
-    print("Conexão realizada com sucesso!")
-    cursor = conexao.cursor()
-
-except mysql.connector.Error as erro:
-    print(f"Erro ao conectar: {erro}")
-    exit()"""
-
 try:
     conexao = mysql.connector.connect(
-        host="127.0.0.1",       # ou IP do servidor
-        user="root",            # seu usuário
-        password="gabierik2",   # sua senha
-        database="BD24022618"   # nome do banco de dados
+        host="BD-ACD",              # ou IP do servidor
+        user="BD24022618",          # seu usuário
+        password="Aaqfz5",          # sua senha
+        database="BD24022618"       # nome do banco de dados
     )
     print("Conexão realizada com sucesso!")
     cursor = conexao.cursor()
@@ -29,6 +15,10 @@ try:
 except mysql.connector.Error as erro:
     print(f"Erro ao conectar: {erro}")
     exit()
+
+
+# Colocar os dados do seu bando criado para conexão, seguindo o modelo acima. 
+# Se estiver usando o MySQL Workbench, o host geralmente é "127.0.0.1".
 
 # ─── UTILITÁRIOS ───────────────────────────────────────────
 
